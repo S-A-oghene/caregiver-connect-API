@@ -19,6 +19,9 @@ require("./config/passport"); // Configure passport strategies
 
 const app = express();
 
+// Trust the first proxy in front of the app (e.g., on Render)
+app.set('trust proxy', 1);
+
 // CORS Configuration
 const allowedOrigins = [
   "https://caregiver-connect-api.onrender.com",
@@ -41,17 +44,23 @@ app.use(
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
-      collectionName: "sessions",
-    }),
-  })
-);
+
+const sessionOptions = {
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URI,
+    collectionName: "sessions",
+  }),
+  cookie: {},
+};
+
+if (app.get('env') === 'production') {
+  sessionOptions.cookie.secure = true; // Serve secure cookies in production
+}
+
+app.use(session(sessionOptions));
 app.use(passport.initialize());
 app.use(passport.session());
 
