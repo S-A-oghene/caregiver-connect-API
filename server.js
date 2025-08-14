@@ -17,6 +17,11 @@ const reviewRoutes = require("./routes/review.routes");
 
 const app = express();
 
+// Security check for essential environment variables
+if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
+  throw new Error('FATAL ERROR: SESSION_SECRET is not defined in the production environment.');
+}
+
 // CORS Configuration
 const allowedOrigins = [
   "https://caregiver-connect-api.onrender.com",
@@ -41,7 +46,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "secret",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
   })
