@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const jwt = require("jsonwebtoken");
 const swaggerUi = require("swagger-ui-express");
 const fs = require("fs");
