@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const session = require("express-session");
+const jwt = require("jsonwebtoken");
 const swaggerUi = require("swagger-ui-express");
 const fs = require("fs");
 const path = require("path");
@@ -31,8 +32,6 @@ app.use(passport.session());
 // MongoDB connection
 mongoose
   .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
   })
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
@@ -42,6 +41,11 @@ app.use("/users", userRoutes);
 app.use("/profiles", profileRoutes);
 app.use("/bookings", bookingRoutes);
 app.use("/reviews", reviewRoutes);
+
+app.get("/", (req, res) => {
+  // Redirect to the API documentation for a better user experience
+  res.redirect("/api-docs");
+});
 
 // Swagger API docs
 const swaggerFile = path.join(__dirname, "swagger", "swagger.json");
@@ -54,27 +58,37 @@ if (fs.existsSync(swaggerFile)) {
   );
 }
 
-// OAuth routes (Google)
+// OAuth routes (Github)
 require("./config/passport");
 app.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  "/auth/github",
+  passport.authenticate("github", { scope: ["profile", "user:email"] })
 );
 app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }),
+  "/auth/github/callback",
+  passport.authenticate("github", { failureRedirect: "/" }),
   (req, res) => {
-    res.cookie("token", req.user.token, { httpOnly: true });
+    // Token is now generated here, only at login time.
+    const token = jwt.sign(
+      { id: req.user._id, role: req.user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+    res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
     res.redirect("/");
   }
 );
-app.get("/auth/logout", (req, res) => {
-  req.logout();
-  res.clearCookie("token");
-  res.send("Logged out");
+app.get("/auth/logout", (req, res, next) => { // Add next to handle errors properly
+  // req.logout() now requires a callback function.
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.clearCookie("token");
+    res.redirect("/");
+  });
 });
 app.get("/auth/status", (req, res) => {
   if (req.isAuthenticated()) {
+    // req.user is now the clean user object.
     res.json({ user: req.user });
   } else {
     res.status(401).json({ error: "Not authenticated" });

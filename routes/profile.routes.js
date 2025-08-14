@@ -2,6 +2,7 @@ const express = require("express");
 const { body } = require("express-validator");
 const caregiverProfileController = require("../controllers/caregiverProfileController");
 const auth = require("../middleware/auth");
+const authorize = require('../middleware/authorize');
 
 const router = express.Router();
 
@@ -27,5 +28,7 @@ router.put(
   ],
   caregiverProfileController.updateProfile
 );
+
+router.delete('/:id', auth, authorize(['caregiver']), caregiverProfileController.deleteProfile);
 
 module.exports = router;
