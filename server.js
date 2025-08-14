@@ -2,7 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const passport = require("passport");
-const jwt = require("jsonwebtoken");
 const swaggerUi = require("swagger-ui-express");
 const fs = require("fs");
 const path = require("path");
@@ -15,7 +14,6 @@ const userRoutes = require("./routes/user.routes");
 const profileRoutes = require("./routes/profile.routes");
 const bookingRoutes = require("./routes/booking.routes");
 const reviewRoutes = require("./routes/review.routes");
-const authRoutes = require("./routes/auth.routes");
 
 require("./config/passport"); // Configure passport strategies
 
@@ -50,7 +48,7 @@ app.use(
     saveUninitialized: false,
     store: MongoStore.create({
       mongoUrl: process.env.MONGODB_URI,
-      collectionName: 'sessions'
+      collectionName: "sessions",
     }),
   })
 );
@@ -59,17 +57,17 @@ app.use(passport.session());
 
 // MongoDB connection
 mongoose
-  .connect(process.env.MONGODB_URI, {
-  })
+  .connect(process.env.MONGODB_URI, {})
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
 // Routes
+const authRoutes = require("./routes/auth.routes");
+app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/profiles", profileRoutes);
 app.use("/bookings", bookingRoutes);
 app.use("/reviews", reviewRoutes);
-app.use("/auth", authRoutes);
 
 app.get("/", (req, res) => {
   // Redirect to the API documentation for a better user experience
