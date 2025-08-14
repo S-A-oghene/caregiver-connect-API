@@ -1,0 +1,185 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Caregiver Connect API",
+    "version": "1.0.0",
+    "description": "API documentation for Caregiver Connect platform."
+  },
+  "servers": [
+    { "url": "https://your-app-name.onrender.com" }
+  ],
+  "paths": {
+    "/auth/google": {
+      "get": {
+        "summary": "Initiate Google OAuth login",
+        "responses": { "302": { "description": "Redirect to Google" } }
+      }
+    },
+    "/auth/google/callback": {
+      "get": {
+        "summary": "Google OAuth callback",
+        "responses": { "302": { "description": "Redirect after login" } }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "summary": "Logout user",
+        "responses": { "200": { "description": "Logged out" } }
+      }
+    },
+    "/auth/status": {
+      "get": {
+        "summary": "Check authentication status",
+        "responses": { "200": { "description": "Authenticated user info" }, "401": { "description": "Not authenticated" } }
+      }
+    },
+    "/users/me": {
+      "get": {
+        "summary": "Get current user profile",
+        "security": [{ "cookieAuth": [] }],
+        "responses": { "200": { "description": "User profile" }, "401": { "description": "Unauthorized" } }
+      },
+      "put": {
+        "summary": "Update current user profile",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } }
+        },
+        "responses": { "200": { "description": "Updated user profile" }, "400": { "description": "Validation error" }, "401": { "description": "Unauthorized" } }
+      }
+    },
+    "/profiles": {
+      "get": {
+        "summary": "Get all caregiver profiles",
+        "responses": { "200": { "description": "List of profiles" } }
+      },
+      "post": {
+        "summary": "Create caregiver profile",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CaregiverProfile" } } }
+        },
+        "responses": { "201": { "description": "Profile created" }, "400": { "description": "Validation error" }, "401": { "description": "Unauthorized" } }
+      }
+    },
+    "/profiles/{id}": {
+      "get": {
+        "summary": "Get caregiver profile by user ID",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Profile" }, "404": { "description": "Not found" } }
+      },
+      "put": {
+        "summary": "Update caregiver profile",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CaregiverProfile" } } }
+        },
+        "responses": { "200": { "description": "Profile updated" }, "400": { "description": "Validation error" }, "401": { "description": "Unauthorized" }, "404": { "description": "Not found" } }
+      }
+    },
+    "/bookings": {
+      "get": {
+        "summary": "Get all bookings for current user",
+        "security": [{ "cookieAuth": [] }],
+        "responses": { "200": { "description": "List of bookings" }, "401": { "description": "Unauthorized" } }
+      },
+      "post": {
+        "summary": "Create booking",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Booking" } } }
+        },
+        "responses": { "201": { "description": "Booking created" }, "400": { "description": "Validation error" }, "401": { "description": "Unauthorized" } }
+      }
+    },
+    "/bookings/{id}": {
+      "get": {
+        "summary": "Get booking by ID",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Booking" }, "404": { "description": "Not found" }, "401": { "description": "Unauthorized" } }
+      },
+      "put": {
+        "summary": "Update booking",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Booking" } } }
+        },
+        "responses": { "200": { "description": "Booking updated" }, "400": { "description": "Validation error" }, "401": { "description": "Unauthorized" }, "404": { "description": "Not found" } }
+      },
+      "delete": {
+        "summary": "Delete booking",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Booking deleted" }, "404": { "description": "Not found" }, "401": { "description": "Unauthorized" } }
+      }
+    },
+    "/reviews/caregiver/{caregiverId}": {
+      "get": {
+        "summary": "Get reviews for caregiver",
+        "parameters": [{ "name": "caregiverId", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "List of reviews" } }
+      }
+    },
+    "/reviews": {
+      "post": {
+        "summary": "Create review",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Review" } } }
+        },
+        "responses": { "201": { "description": "Review created" }, "400": { "description": "Validation error" }, "401": { "description": "Unauthorized" } }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "phoneNumber": { "type": "string" },
+          "address": { "type": "string" }
+        }
+      },
+      "CaregiverProfile": {
+        "type": "object",
+        "properties": {
+          "bio": { "type": "string" },
+          "yearsOfExperience": { "type": "integer" },
+          "hourlyRate": { "type": "number" }
+        }
+      },
+      "Booking": {
+        "type": "object",
+        "properties": {
+          "caregiverId": { "type": "string" },
+          "date": { "type": "string", "format": "date" },
+          "startTime": { "type": "string" },
+          "endTime": { "type": "string" },
+          "status": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      },
+      "Review": {
+        "type": "object",
+        "properties": {
+          "bookingId": { "type": "string" },
+          "caregiverId": { "type": "string" },
+          "rating": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "comment": { "type": "string" }
+        }
+      }
+    },
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "token"
+      }
+    }
+  }
+}

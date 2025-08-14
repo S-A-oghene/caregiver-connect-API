@@ -1,0 +1,17 @@
+# Dependencies
+/node_modules
+
+# Environment variables
+# This file contains secrets and should not be committed.
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Optional build/dist folder
+/build
+/dist
