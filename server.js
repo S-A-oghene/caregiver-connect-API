@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 const swaggerUi = require("swagger-ui-express");
 const fs = require("fs");
 const path = require("path");
+const cors = require("cors");
 
 const userRoutes = require("./routes/user.routes");
 const profileRoutes = require("./routes/profile.routes");
@@ -15,6 +16,25 @@ const bookingRoutes = require("./routes/booking.routes");
 const reviewRoutes = require("./routes/review.routes");
 
 const app = express();
+
+// CORS Configuration
+const allowedOrigins = [
+  "https://caregiver-connect-api.onrender.com",
+  "http://localhost:3000",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // This is important for cookies
+  })
+);
 
 // Middleware
 app.use(express.json());
