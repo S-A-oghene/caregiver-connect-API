@@ -62,8 +62,6 @@ mongoose
   .catch((err) => console.error("MongoDB connection error:", err));
 
 // Routes
-const authRoutes = require("./routes/auth.routes");
-app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/profiles", profileRoutes);
 app.use("/bookings", bookingRoutes);
@@ -72,6 +70,32 @@ app.use("/reviews", reviewRoutes);
 app.get("/", (req, res) => {
   // Redirect to the API documentation for a better user experience
   res.redirect("/api-docs");
+});
+
+// OAuth routes (Github)
+app.get(
+  "/auth/login",
+  passport.authenticate("github", { scope: ["profile", "user:email"] })
+);
+
+app.get(
+  "/auth/github/callback",
+  passport.authenticate("github", { failureRedirect: "/api-docs" }),
+  (req, res) => {
+    // Successful authentication, redirect to the API docs.
+    // The browser now has the session cookie.
+    res.redirect("/api-docs");
+  }
+);
+
+// @route   GET /auth/logout
+// @desc    Logs user out by destroying the session
+// @access  Private (requires user to be logged in)
+app.get("/auth/logout", (req, res, next) => {
+  req.logout(function (err) {
+    if (err) { return next(err); }
+    res.redirect("/api-docs");
+  });
 });
 
 // Swagger API docs
