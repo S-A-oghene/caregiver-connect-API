@@ -87,7 +87,7 @@ if (fs.existsSync(swaggerFile)) {
 // OAuth routes (Github)
 require("./config/passport");
 app.get(
-  "/auth/github",
+  "/auth/login", // Changed from /auth/github
   passport.authenticate("github", { scope: ["profile", "user:email"] })
 );
 app.get(

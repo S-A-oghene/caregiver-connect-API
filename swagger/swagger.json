@@ -10,22 +10,25 @@
     { "url": "http://localhost:3000", "description": "Local Development Server" }
   ],
   "paths": {
-    "/auth/github": {
+    "/auth/login": {
       "get": {
-        "summary": "Initiate GitHub OAuth login",
-        "responses": { "302": { "description": "Redirect to GitHub" } }
+        "summary": "Log in with GitHub",
+        "description": "Initiates the GitHub OAuth2 login flow. Important: Do not use the 'Execute' button. Instead, open this link in a new browser tab to log in. After successful authorization, you will be redirected back to this documentation page with an active session.",
+        "responses": { "302": { "description": "Redirect to GitHub for authentication." } }
       }
     },
     "/auth/github/callback": {
       "get": {
         "summary": "GitHub OAuth callback",
+        "description": "This is the callback URL that GitHub redirects to after a user authorizes the application. It is handled automatically by the server and not intended for direct use.",
         "responses": { "302": { "description": "Redirect after login" } }
       }
     },
     "/auth/logout": {
       "get": {
-        "summary": "Logout user",
-        "responses": { "200": { "description": "Logged out" } }
+        "summary": "Log out",
+        "description": "Logs the current user out and destroys the session. Important: Do not use the 'Execute' button. Instead, open this link in a new browser tab to log out. After logging out, you will no longer be able to access protected routes.",
+        "responses": { "302": { "description": "Redirect to the home page after logging out." } }
       }
     },
     "/auth/status": {
