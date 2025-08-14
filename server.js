@@ -7,6 +7,8 @@ const swaggerUi = require("swagger-ui-express");
 const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
 const MongoStore = require("connect-mongo");
 
 const userRoutes = require("./routes/user.routes");
