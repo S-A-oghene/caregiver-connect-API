@@ -1,15 +1,13 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-const cookieParser = require("cookie-parser");
 const passport = require("passport");
-const session = require("express-session");
-const MongoStore = require("connect-mongo");
 const jwt = require("jsonwebtoken");
 const swaggerUi = require("swagger-ui-express");
 const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
+const MongoStore = require("connect-mongo");
 
 const userRoutes = require("./routes/user.routes");
 const profileRoutes = require("./routes/profile.routes");
@@ -17,11 +15,6 @@ const bookingRoutes = require("./routes/booking.routes");
 const reviewRoutes = require("./routes/review.routes");
 
 const app = express();
-
-// Security check for essential environment variables
-if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
-  throw new Error('FATAL ERROR: SESSION_SECRET is not defined in the production environment.');
-}
 
 // CORS Configuration
 const allowedOrigins = [
@@ -50,6 +43,10 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      collectionName: 'sessions'
+    }),
   })
 );
 app.use(passport.initialize());
@@ -94,32 +91,18 @@ app.get(
   "/auth/github/callback",
   passport.authenticate("github", { failureRedirect: "/" }),
   (req, res) => {
-    // Token is now generated here, only at login time.
+    // Generate token
     const token = jwt.sign(
       { id: req.user._id, role: req.user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
-    res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-    res.redirect("/");
+    // Redirect back to the frontend with the token.
+    // The frontend URL should ideally be in your .env file.
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
   }
 );
-app.get("/auth/logout", (req, res, next) => { // Add next to handle errors properly
-  // req.logout() now requires a callback function.
-  req.logout(function(err) {
-    if (err) { return next(err); }
-    res.clearCookie("token");
-    res.redirect("/");
-  });
-});
-app.get("/auth/status", (req, res) => {
-  if (req.isAuthenticated()) {
-    // req.user is now the clean user object.
-    res.json({ user: req.user });
-  } else {
-    res.status(401).json({ error: "Not authenticated" });
-  }
-});
 
 // Error handling
 app.use((err, req, res, next) => {

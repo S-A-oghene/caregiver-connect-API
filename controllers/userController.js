@@ -4,7 +4,7 @@ const { validationResult } = require("express-validator");
 // @route   GET /users/me
 // @desc    Get current user's profile
 // @access  Private
-exports.getCurrentUser = async (req, res) => {
+exports.getCurrentUser = async (req, res, next) => {
   try {
     // req.user is attached by the auth middleware from the cookie token
     const user = await User.findById(req.user.id).select("-googleId -githubId");
@@ -13,15 +13,14 @@ exports.getCurrentUser = async (req, res) => {
     }
     res.json(user);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
+    next(err);
   }
 };
 
 // @route   PUT /users/me
 // @desc    Update current user's profile
 // @access  Private
-exports.updateCurrentUser = async (req, res) => {
+exports.updateCurrentUser = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -45,7 +44,6 @@ exports.updateCurrentUser = async (req, res) => {
 
     res.json(user);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
+    next(err);
   }
 };
