@@ -48,6 +48,7 @@ passport.use(
           // GitHub profiles might not have separate first/last names
           firstName: profile.displayName || profile.username,
           lastName: "",
+          role: 'client' // Assign a default role
         });
 
         user = await newUser.save();

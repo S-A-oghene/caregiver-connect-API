@@ -1,21 +1,28 @@
 const express = require("express");
-const { body } = require("express-validator");
+const router = express.Router();
+const { check } = require("express-validator");
 const userController = require("../controllers/userController");
+
+// This auth middleware is assumed to exist at middleware/auth.js
+// It decodes the JWT from the cookie and attaches the user to the request.
 const auth = require("../middleware/auth");
 
-const router = express.Router();
+// @route   GET /users/me
+// @desc    Get current user's profile
+// @access  Private
+router.get("/me", auth, userController.getCurrentUser);
 
-router.get("/me", auth, userController.getMe);
+// @route   PUT /users/me
+// @desc    Update current user's profile
+// @access  Private
 router.put(
   "/me",
-  auth,
   [
-    body("firstName").optional().isString(),
-    body("lastName").optional().isString(),
-    body("phoneNumber").optional().isString(),
-    body("address").optional().isString(),
+    auth,
+    // Add any validation rules you need here
+    check("firstName", "First name cannot be empty").optional().not().isEmpty(),
   ],
-  userController.updateMe
+  userController.updateCurrentUser
 );
 
 module.exports = router;

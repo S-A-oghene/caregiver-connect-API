@@ -6,7 +6,8 @@
     "description": "API documentation for Caregiver Connect platform."
   },
   "servers": [
-    { "url": "https://caregiver-connect-api.onrender.com" }
+    { "url": "https://caregiver-connect-api.onrender.com", "description": "Production Server" },
+    { "url": "http://localhost:3000", "description": "Local Development Server" }
   ],
   "paths": {
     "/auth/github": {
