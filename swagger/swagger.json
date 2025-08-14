@@ -27,12 +27,12 @@
     "/users/me": {
       "get": {
         "summary": "Get current user profile",
-        "security": [{ "bearerAuth": [] }],
+        "security": [{ "cookieAuth": [] }],
         "responses": { "200": { "description": "User profile" }, "401": { "description": "Unauthorized" } }
       },
       "put": {
         "summary": "Update current user profile",
-        "security": [{ "bearerAuth": [] }],
+        "security": [{ "cookieAuth": [] }],
         "requestBody": {
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } }
         },
@@ -46,7 +46,7 @@
       },
       "post": {
         "summary": "Create caregiver profile",
-        "security": [{ "bearerAuth": [] }],
+        "security": [{ "cookieAuth": [] }],
         "requestBody": {
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CaregiverProfile" } } }
         },
@@ -61,7 +61,7 @@
       },
       "put": {
         "summary": "Update caregiver profile",
-        "security": [{ "bearerAuth": [] }],
+        "security": [{ "cookieAuth": [] }],
         "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
         "requestBody": {
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CaregiverProfile" } } }
@@ -70,7 +70,7 @@
       },
       "delete": {
         "summary": "Delete caregiver profile",
-        "security": [{ "bearerAuth": [] }],
+        "security": [{ "cookieAuth": [] }],
         "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
         "responses": { "200": { "description": "Profile deleted" }, "401": { "description": "Unauthorized" }, "403": { "description": "Forbidden" }, "404": { "description": "Not found" } }
       }
@@ -78,12 +78,12 @@
     "/bookings": {
       "get": {
         "summary": "Get all bookings for current user",
-        "security": [{ "bearerAuth": [] }],
+        "security": [{ "cookieAuth": [] }],
         "responses": { "200": { "description": "List of bookings" }, "401": { "description": "Unauthorized" } }
       },
       "post": {
         "summary": "Create booking",
-        "security": [{ "bearerAuth": [] }],
+        "security": [{ "cookieAuth": [] }],
         "requestBody": {
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Booking" } } }
         },
@@ -93,13 +93,13 @@
     "/bookings/{id}": {
       "get": {
         "summary": "Get booking by ID",
-        "security": [{ "bearerAuth": [] }],
+        "security": [{ "cookieAuth": [] }],
         "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
         "responses": { "200": { "description": "Booking" }, "404": { "description": "Not found" }, "401": { "description": "Unauthorized" } }
       },
       "put": {
         "summary": "Update booking",
-        "security": [{ "bearerAuth": [] }],
+        "security": [{ "cookieAuth": [] }],
         "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
         "requestBody": {
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Booking" } } }
@@ -108,7 +108,7 @@
       },
       "delete": {
         "summary": "Delete booking",
-        "security": [{ "bearerAuth": [] }],
+        "security": [{ "cookieAuth": [] }],
         "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
         "responses": { "200": { "description": "Booking deleted" }, "404": { "description": "Not found" }, "401": { "description": "Unauthorized" } }
       }
@@ -123,7 +123,7 @@
     "/reviews": {
       "post": {
         "summary": "Create review",
-        "security": [{ "bearerAuth": [] }],
+        "security": [{ "cookieAuth": [] }],
         "requestBody": {
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Review" } } }
         },
@@ -133,7 +133,7 @@
     "/reviews/{id}": {
       "put": {
         "summary": "Update a review",
-        "security": [{ "bearerAuth": [] }],
+        "security": [{ "cookieAuth": [] }],
         "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
         "requestBody": {
           "content": {
@@ -146,7 +146,7 @@
       },
       "delete": {
         "summary": "Delete a review",
-        "security": [{ "bearerAuth": [] }],
+        "security": [{ "cookieAuth": [] }],
         "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
         "responses": { "200": { "description": "Review deleted" }, "401": { "description": "Unauthorized" }, "403": { "description": "Forbidden" }, "404": { "description": "Not found" } }
       }
@@ -200,10 +200,10 @@
       }
     },
     "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "connect.sid"
       }
     }
   }

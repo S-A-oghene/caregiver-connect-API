@@ -93,16 +93,9 @@ app.get(
   "/auth/github/callback",
   passport.authenticate("github", { failureRedirect: "/" }),
   (req, res) => {
-    // Generate token
-    const token = jwt.sign(
-      { id: req.user._id, role: req.user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-    // Redirect back to the frontend with the token.
-    // The frontend URL should ideally be in your .env file.
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
+    // Successful authentication, redirect to where you want.
+    // For Swagger UI, a good place is back to the API docs.
+    res.redirect("/api-docs");
   }
 );
 
