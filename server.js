@@ -15,6 +15,9 @@ const userRoutes = require("./routes/user.routes");
 const profileRoutes = require("./routes/profile.routes");
 const bookingRoutes = require("./routes/booking.routes");
 const reviewRoutes = require("./routes/review.routes");
+const authRoutes = require("./routes/auth.routes");
+
+require("./config/passport"); // Configure passport strategies
 
 const app = express();
 
@@ -66,6 +69,7 @@ app.use("/users", userRoutes);
 app.use("/profiles", profileRoutes);
 app.use("/bookings", bookingRoutes);
 app.use("/reviews", reviewRoutes);
+app.use("/auth", authRoutes);
 
 app.get("/", (req, res) => {
   // Redirect to the API documentation for a better user experience
@@ -82,22 +86,6 @@ if (fs.existsSync(swaggerFile)) {
     res.status(404).send("Swagger documentation not found.")
   );
 }
-
-// OAuth routes (Github)
-require("./config/passport");
-app.get(
-  "/auth/login", // Changed from /auth/github
-  passport.authenticate("github", { scope: ["profile", "user:email"] })
-);
-app.get(
-  "/auth/github/callback",
-  passport.authenticate("github", { failureRedirect: "/" }),
-  (req, res) => {
-    // Successful authentication, redirect to where you want.
-    // For Swagger UI, a good place is back to the API docs.
-    res.redirect("/api-docs");
-  }
-);
 
 // Error handling
 app.use((err, req, res, next) => {
