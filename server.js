@@ -23,20 +23,12 @@ const app = express();
 app.set("trust proxy", 1);
 
 // CORS Configuration
-const allowedOrigins = [
-  "https://caregiver-connect-api.onrender.com",
-  "http://localhost:3000",
-];
-
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: [
+      "https://caregiver-connect-api.onrender.com",
+      "http://localhost:3000",
+    ],
     credentials: true, // This is important for cookies
   })
 );
@@ -53,11 +45,15 @@ const sessionOptions = {
     mongoUrl: process.env.MONGODB_URI,
     collectionName: "sessions",
   }),
-  cookie: {},
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24, // 1 day
+  },
 };
 
 if (app.get("env") === "production") {
+  // Required for Render deployment to trust the proxy and allow cross-site cookies
   sessionOptions.cookie.secure = true; // Serve secure cookies in production
+  sessionOptions.cookie.sameSite = "none";
 }
 
 app.use(session(sessionOptions));
