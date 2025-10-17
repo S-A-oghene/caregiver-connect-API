@@ -12,15 +12,15 @@ const MongoStore = require("connect-mongo");
 
 const userRoutes = require("./routes/user.routes");
 const profileRoutes = require("./routes/profile.routes");
-const bookingRoutes = require("./routes/booking.routes");
-const reviewRoutes = require("./routes/review.routes");
+// const bookingRoutes = require("./routes/booking.routes"); // To be implemented in Week 06
+// const reviewRoutes = require("./routes/review.routes"); // To be implemented in Week 07
 
 require("./config/passport"); // Configure passport strategies
 
 const app = express();
 
 // Trust the first proxy in front of the app (e.g., on Render)
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 
 // CORS Configuration
 const allowedOrigins = [
@@ -56,7 +56,7 @@ const sessionOptions = {
   cookie: {},
 };
 
-if (app.get('env') === 'production') {
+if (app.get("env") === "production") {
   sessionOptions.cookie.secure = true; // Serve secure cookies in production
 }
 
@@ -73,8 +73,8 @@ mongoose
 // Routes
 app.use("/users", userRoutes);
 app.use("/profiles", profileRoutes);
-app.use("/bookings", bookingRoutes);
-app.use("/reviews", reviewRoutes);
+// app.use("/bookings", bookingRoutes); // To be implemented in Week 06
+// app.use("/reviews", reviewRoutes); // To be implemented in Week 07
 
 app.get("/", (req, res) => {
   // Redirect to the API documentation for a better user experience
@@ -97,12 +97,24 @@ app.get(
   }
 );
 
+// @route   GET /auth/status
+// @desc    Checks if the user is currently authenticated and returns user data.
+// @access  Private
+app.get("/auth/status", (req, res) => {
+  // This is an alias for /users/me for frontend clarity as per the proposal
+  return req.user
+    ? res.status(200).json(req.user)
+    : res.status(401).json({ message: "Unauthorized" });
+});
+
 // @route   GET /auth/logout
 // @desc    Logs user out by destroying the session
 // @access  Private (requires user to be logged in)
 app.get("/auth/logout", (req, res, next) => {
   req.logout(function (err) {
-    if (err) { return next(err); }
+    if (err) {
+      return next(err);
+    }
     res.redirect("/api-docs");
   });
 });

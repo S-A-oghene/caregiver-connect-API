@@ -24,6 +24,14 @@
         "responses": { "302": { "description": "Redirects to the API documentation after successful login." } }
       }
     },
+    "/auth/status": {
+      "get": {
+        "summary": "Check authentication status",
+        "description": "Checks if the user is currently authenticated and returns user data if a session exists.",
+        "security": [{ "cookieAuth": [] }],
+        "responses": { "200": { "description": "Authenticated user data" }, "401": { "description": "Unauthorized" } }
+      }
+    },
     "/auth/logout": {
       "get": {
         "summary": "Log out",
@@ -82,7 +90,7 @@
         "responses": { "200": { "description": "Profile deleted" }, "401": { "description": "Unauthorized" }, "403": { "description": "Forbidden" }, "404": { "description": "Not found" } }
       }
     },
-    "/bookings": {
+    "/bookings_commented_out_for_w06": {
       "get": {
         "summary": "Get all bookings for current user",
         "security": [{ "cookieAuth": [] }],
@@ -97,7 +105,7 @@
         "responses": { "201": { "description": "Booking created" }, "400": { "description": "Validation error" }, "401": { "description": "Unauthorized" } }
       }
     },
-    "/bookings/{id}": {
+    "/bookings/{id}_commented_out_for_w06": {
       "get": {
         "summary": "Get booking by ID",
         "security": [{ "cookieAuth": [] }],
@@ -120,14 +128,14 @@
         "responses": { "200": { "description": "Booking deleted" }, "404": { "description": "Not found" }, "401": { "description": "Unauthorized" } }
       }
     },
-    "/reviews/caregiver/{caregiverId}": {
+    "/reviews/caregiver/{caregiverId}_commented_out_for_w07": {
       "get": {
         "summary": "Get reviews for caregiver",
         "parameters": [{ "name": "caregiverId", "in": "path", "required": true, "schema": { "type": "string" } }],
         "responses": { "200": { "description": "List of reviews" } }
       }
     },
-    "/reviews": {
+    "/reviews_commented_out_for_w07": {
       "post": {
         "summary": "Create review",
         "security": [{ "cookieAuth": [] }],
@@ -137,7 +145,7 @@
         "responses": { "201": { "description": "Review created" }, "400": { "description": "Validation error" }, "401": { "description": "Unauthorized" } }
       }
     },
-    "/reviews/{id}": {
+    "/reviews/{id}_commented_out_for_w07": {
       "put": {
         "summary": "Update a review",
         "security": [{ "cookieAuth": [] }],
@@ -163,28 +171,37 @@
     "schemas": {
       "User": {
         "type": "object",
+        "description": "Fields for updating a user's profile. All are optional.",
         "properties": {
           "firstName": { "type": "string" },
           "lastName": { "type": "string" },
           "phoneNumber": { "type": "string" },
-          "address": { "type": "string" }
+          "address": { "type": "string" },
+          "role": { "type": "string", "enum": ["client", "caregiver"], "description": "User role, can only be set at creation." }
         }
       },
       "CaregiverProfile": {
         "type": "object",
+        "description": "Represents a caregiver's professional profile.",
         "properties": {
+          "userId": { "type": "string", "description": "Reference to the user account.", "readOnly": true },
           "bio": { "type": "string" },
+          "profilePictureUrl": { "type": "string", "format": "uri" },
           "yearsOfExperience": { "type": "integer" },
-          "hourlyRate": { "type": "number" }
+          "certifications": { "type": "array", "items": { "type": "string" } },
+          "servicesOffered": { "type": "array", "items": { "type": "string" } },
+          "hourlyRate": { "type": "number", "format": "float" }
         }
       },
-      "Booking": {
+      "Booking_commented_out_for_w06": {
         "type": "object",
         "properties": {
+          "clientId": { "type": "string", "readOnly": true },
           "caregiverId": { "type": "string" },
-          "startTime": { "type": "string", "format": "date-time" },
-          "endTime": { "type": "string", "format": "date-time" },
-          "status": { "type": "string" },
+          "date": { "type": "string", "format": "date" },
+          "startTime": { "type": "string", "format": "time" },
+          "endTime": { "type": "string", "format": "time" },
+          "status": { "type": "string", "enum": ["pending", "confirmed", "completed", "cancelled"] },
           "notes": { "type": "string" }
         }
       },
@@ -192,9 +209,11 @@
         "type": "object",
         "properties": {
           "bookingId": { "type": "string" },
+          "clientId": { "type": "string", "readOnly": true },
           "caregiverId": { "type": "string" },
           "rating": { "type": "integer", "minimum": 1, "maximum": 5 },
-          "comment": { "type": "string" }
+          "comment": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time", "readOnly": true }
         }
       },
       "ReviewUpdate": {
