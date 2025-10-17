@@ -26,7 +26,7 @@ exports.updateCurrentUser = async (req, res, next) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { firstName, lastName, phoneNumber, address } = req.body;
+  const { firstName, lastName, phoneNumber, address, role } = req.body;
 
   // Build a fields object to update
   const profileFields = {};
@@ -34,6 +34,9 @@ exports.updateCurrentUser = async (req, res, next) => {
   if (lastName || lastName === "") profileFields.lastName = lastName;
   if (phoneNumber) profileFields.phoneNumber = phoneNumber;
   if (address) profileFields.address = address;
+  // WARNING: Allowing users to change their own role is a security risk.
+  // This is added for development convenience and should be removed or protected.
+  if (role && ["client", "caregiver"].includes(role)) profileFields.role = role;
 
   try {
     const user = await User.findByIdAndUpdate(
