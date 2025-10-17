@@ -1,5 +1,6 @@
-const CaregiverProfile = require("../models/profile.model");
-const User = require("../models/user.model"); // Assuming you have a User model
+const CaregiverProfile = require("../models/CaregiverProfile");
+const User = require("../models/User"); // Assuming you have a User model
+const { validationResult } = require("express-validator");
 const mongoose = require("mongoose");
 
 /**
@@ -18,12 +19,10 @@ const getAllProfiles = async (req, res) => {
     );
     res.status(200).json(profiles);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "Server error while fetching profiles.",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Server error while fetching profiles.",
+      error: error.message,
+    });
   }
 };
 
@@ -51,12 +50,10 @@ const getProfileById = async (req, res) => {
 
     res.status(200).json(profile);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "Server error while fetching the profile.",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Server error while fetching the profile.",
+      error: error.message,
+    });
   }
 };
 
@@ -66,6 +63,12 @@ const getProfileById = async (req, res) => {
  * @access  Private (Caregivers only)
  */
 const createProfile = async (req, res) => {
+  // Handle validation errors from the route
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     // #swagger.tags = ['Profiles']
     // #swagger.summary = 'Create caregiver profile'
@@ -76,12 +79,10 @@ const createProfile = async (req, res) => {
 
     // Authorization: Check if the logged-in user has the 'caregiver' role
     if (req.user.role !== "caregiver") {
-      return res
-        .status(403)
-        .json({
-          message:
-            'Forbidden: Only users with the "caregiver" role can create a profile.',
-        });
+      return res.status(403).json({
+        message:
+          'Forbidden: Only users with the "caregiver" role can create a profile.',
+      });
     }
 
     // Validation: Check if a profile already exists for this user
@@ -89,12 +90,9 @@ const createProfile = async (req, res) => {
       userId: req.user._id,
     });
     if (existingProfile) {
-      return res
-        .status(409)
-        .json({
-          message:
-            "Conflict: A caregiver profile already exists for this user.",
-        });
+      return res.status(409).json({
+        message: "Conflict: A caregiver profile already exists for this user.",
+      });
     }
 
     const {
@@ -104,16 +102,6 @@ const createProfile = async (req, res) => {
       servicesOffered,
       hourlyRate,
     } = req.body;
-
-    // Validation: Check for required fields
-    if (!bio || yearsOfExperience === undefined || !hourlyRate) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Validation Error: bio, yearsOfExperience, and hourlyRate are required.",
-        });
-    }
 
     const newProfile = new CaregiverProfile({
       userId: req.user._id, // Link to the authenticated user
@@ -128,12 +116,10 @@ const createProfile = async (req, res) => {
     res.status(201).json(savedProfile);
   } catch (error) {
     // Catches both validation errors from Mongoose and general server errors
-    res
-      .status(500)
-      .json({
-        message: "Server error while creating profile.",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Server error while creating profile.",
+      error: error.message,
+    });
   }
 };
 
@@ -143,6 +129,12 @@ const createProfile = async (req, res) => {
  * @access  Private (Owner only)
  */
 const updateProfile = async (req, res) => {
+  // Handle validation errors from the route
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     // #swagger.tags = ['Profiles']
     // #swagger.summary = 'Update caregiver profile'
@@ -169,12 +161,10 @@ const updateProfile = async (req, res) => {
 
     res.status(200).json(updatedProfile);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "Server error while updating profile.",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Server error while updating profile.",
+      error: error.message,
+    });
   }
 };
 
@@ -205,12 +195,10 @@ const deleteProfile = async (req, res) => {
 
     res.status(200).json({ message: "Profile deleted successfully." });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "Server error while deleting profile.",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Server error while deleting profile.",
+      error: error.message,
+    });
   }
 };
 
