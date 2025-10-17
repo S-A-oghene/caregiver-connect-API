@@ -26,7 +26,7 @@ app.set("trust proxy", 1);
 app.use(
   cors({
     origin: [
-      "https://caregiver-connect-api.onrender.com",
+      "https://caregiver-connect-api-cse341wk7.onrender.com",
       "http://localhost:3000",
     ],
     credentials: true, // This is important for cookies

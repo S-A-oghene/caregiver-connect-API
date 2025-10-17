@@ -1,4 +1,4 @@
-const CaregiverProfile = require("../models/CaregiverProfile");
+const CaregiverProfile = require("../models/CaregiverProfile"); // Ensure this model exists
 const User = require("../models/User"); // Assuming you have a User model
 const { validationResult } = require("express-validator");
 const mongoose = require("mongoose");
@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
  * @route   GET /profiles
  * @access  Public
  */
-const getAllProfiles = async (req, res) => {
+const getAllProfiles = async (req, res, next) => {
   try {
     // #swagger.tags = ['Profiles']
     // #swagger.summary = 'Get all caregiver profiles'
@@ -19,10 +19,7 @@ const getAllProfiles = async (req, res) => {
     );
     res.status(200).json(profiles);
   } catch (error) {
-    res.status(500).json({
-      message: "Server error while fetching profiles.",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
@@ -31,7 +28,7 @@ const getAllProfiles = async (req, res) => {
  * @route   GET /profiles/:id
  * @access  Public
  */
-const getProfileById = async (req, res) => {
+const getProfileById = async (req, res, next) => {
   try {
     // #swagger.tags = ['Profiles']
     // #swagger.summary = 'Get caregiver profile by user ID'
@@ -50,10 +47,7 @@ const getProfileById = async (req, res) => {
 
     res.status(200).json(profile);
   } catch (error) {
-    res.status(500).json({
-      message: "Server error while fetching the profile.",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
@@ -62,7 +56,7 @@ const getProfileById = async (req, res) => {
  * @route   POST /profiles
  * @access  Private (Caregivers only)
  */
-const createProfile = async (req, res) => {
+const createProfile = async (req, res, next) => {
   // Handle validation errors from the route
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -116,10 +110,7 @@ const createProfile = async (req, res) => {
     res.status(201).json(savedProfile);
   } catch (error) {
     // Catches both validation errors from Mongoose and general server errors
-    res.status(500).json({
-      message: "Server error while creating profile.",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
@@ -128,7 +119,7 @@ const createProfile = async (req, res) => {
  * @route   PUT /profiles/:id
  * @access  Private (Owner only)
  */
-const updateProfile = async (req, res) => {
+const updateProfile = async (req, res, next) => {
   // Handle validation errors from the route
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -161,10 +152,7 @@ const updateProfile = async (req, res) => {
 
     res.status(200).json(updatedProfile);
   } catch (error) {
-    res.status(500).json({
-      message: "Server error while updating profile.",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
@@ -173,7 +161,7 @@ const updateProfile = async (req, res) => {
  * @route   DELETE /profiles/:id
  * @access  Private (Owner only)
  */
-const deleteProfile = async (req, res) => {
+const deleteProfile = async (req, res, next) => {
   try {
     // #swagger.tags = ['Profiles']
     // #swagger.summary = 'Delete caregiver profile'
@@ -195,10 +183,7 @@ const deleteProfile = async (req, res) => {
 
     res.status(200).json({ message: "Profile deleted successfully." });
   } catch (error) {
-    res.status(500).json({
-      message: "Server error while deleting profile.",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
