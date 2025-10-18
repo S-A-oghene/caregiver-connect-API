@@ -90,7 +90,7 @@
         "responses": { "200": { "description": "Profile deleted" }, "401": { "description": "Unauthorized" }, "403": { "description": "Forbidden" }, "404": { "description": "Not found" } }
       }
     },
-    "/bookings_commented_out_for_w06": {
+    "/bookings": {
       "get": {
         "summary": "Get all bookings for current user",
         "security": [{ "cookieAuth": [] }],
@@ -105,7 +105,7 @@
         "responses": { "201": { "description": "Booking created" }, "400": { "description": "Validation error" }, "401": { "description": "Unauthorized" } }
       }
     },
-    "/bookings/{id}_commented_out_for_w06": {
+    "/bookings/{id}": {
       "get": {
         "summary": "Get booking by ID",
         "security": [{ "cookieAuth": [] }],
@@ -128,14 +128,14 @@
         "responses": { "200": { "description": "Booking deleted" }, "404": { "description": "Not found" }, "401": { "description": "Unauthorized" } }
       }
     },
-    "/reviews/caregiver/{caregiverId}_commented_out_for_w07": {
+    "/reviews/caregiver/{caregiverId}": {
       "get": {
         "summary": "Get reviews for caregiver",
         "parameters": [{ "name": "caregiverId", "in": "path", "required": true, "schema": { "type": "string" } }],
         "responses": { "200": { "description": "List of reviews" } }
       }
     },
-    "/reviews_commented_out_for_w07": {
+    "/reviews": {
       "post": {
         "summary": "Create review",
         "security": [{ "cookieAuth": [] }],
@@ -145,7 +145,7 @@
         "responses": { "201": { "description": "Review created" }, "400": { "description": "Validation error" }, "401": { "description": "Unauthorized" } }
       }
     },
-    "/reviews/{id}_commented_out_for_w07": {
+    "/reviews/{id}": {
       "put": {
         "summary": "Update a review",
         "security": [{ "cookieAuth": [] }],
@@ -193,7 +193,7 @@
           "hourlyRate": { "type": "number", "format": "float" }
         }
       },
-      "Booking_commented_out_for_w06": {
+      "Booking": {
         "type": "object",
         "properties": {
           "clientId": { "type": "string", "readOnly": true },

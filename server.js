@@ -12,8 +12,8 @@ const MongoStore = require("connect-mongo");
 
 const userRoutes = require("./routes/user.routes");
 const profileRoutes = require("./routes/profile.routes");
-// const bookingRoutes = require("./routes/booking.routes"); // To be implemented in Week 06
-// const reviewRoutes = require("./routes/review.routes"); // To be implemented in Week 07
+const bookingRoutes = require("./routes/booking.routes");
+const reviewRoutes = require("./routes/review.routes");
 
 require("./config/passport"); // Configure passport strategies
 
@@ -69,8 +69,8 @@ mongoose
 // Routes
 app.use("/users", userRoutes);
 app.use("/profiles", profileRoutes);
-// app.use("/bookings", bookingRoutes); // To be implemented in Week 06
-// app.use("/reviews", reviewRoutes); // To be implemented in Week 07
+app.use("/bookings", bookingRoutes);
+app.use("/reviews", reviewRoutes);
 
 app.get("/", (req, res) => {
   // Redirect to the API documentation for a better user experience

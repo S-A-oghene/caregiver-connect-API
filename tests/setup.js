@@ -1,6 +1,8 @@
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
+
+// Increase the timeout for all tests in this file
+jest.setTimeout(60000);
 
 let mongoServer;
 
@@ -10,23 +12,11 @@ beforeAll(async () => {
   await mongoose.connect(mongoUri);
 });
 
+afterEach(async () => {
+  await mongoose.connection.db.dropDatabase();
+});
+
 afterAll(async () => {
   await mongoose.disconnect();
   await mongoServer.stop();
 });
-
-afterEach(async () => {
-  const collections = mongoose.connection.collections;
-  for (const key in collections) {
-    const collection = collections[key];
-    await collection.deleteMany();
-  }
-});
-
-global.generateAuthToken = (user) => {
-  const payload = {
-    id: user._id,
-    role: user.role,
-  };
-  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
-};

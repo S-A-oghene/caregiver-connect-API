@@ -4,36 +4,34 @@ const userRoutes = require("../routes/user.routes");
 const User = require("../models/User");
 const mongoose = require("mongoose");
 
-// We create a new app instance for our tests and only use the user routes
 const app = express();
 app.use(express.json());
 
-// Mock the auth middleware to simulate a logged-in user
+const mockUserId = new mongoose.Types.ObjectId();
+
+// Mock the auth middleware
 jest.mock("../middleware/auth", () => (req, res, next) => {
-  // This ID will be used in the test to find the correct user
-  req.user = { id: "65b9a7b9f1d3e4c8a8b4f8b1", role: "client" };
+  req.user = { id: mockUserId.toString(), role: "client" };
   next();
 });
 
 app.use("/users", userRoutes);
 
 describe("GET /users/me", () => {
-  it("should return user profile if authenticated", async () => {
-    // Create dummy data
-    const mockUser = {
-      _id: new mongoose.Types.ObjectId("65b9a7b9f1d3e4c8a8b4f8b1"),
-      googleId: "12345",
+  it("should return the profile of the currently logged-in user", async () => {
+    // Create a user to be found by the mock auth middleware
+    await new User({
+      _id: mockUserId,
       email: "test@example.com",
       firstName: "Test",
       lastName: "User",
-      role: "client",
-    };
-    await new User(mockUser).save();
+    }).save();
 
     const res = await request(app).get("/users/me");
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty("email", "test@example.com");
-    expect(res.body._id).toBe("65b9a7b9f1d3e4c8a8b4f8b1");
+    expect(res.body).toHaveProperty("firstName", "Test");
+    expect(res.body._id.toString()).toBe(mockUserId.toString());
   });
 });

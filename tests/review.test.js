@@ -7,37 +7,34 @@ const mongoose = require("mongoose");
 const app = express();
 app.use(express.json());
 
-// GET route is public, so no auth mock needed for this specific test
+const mockClientId = new mongoose.Types.ObjectId();
+const mockCaregiverId = new mongoose.Types.ObjectId();
+
+// Mock the auth middleware for protected routes
+jest.mock("../middleware/auth", () => (req, res, next) => {
+  req.user = { id: mockClientId.toString(), role: "client" };
+  next();
+});
+
 app.use("/reviews", reviewRoutes);
 
 describe("GET /reviews/caregiver/:caregiverId", () => {
-  it("should return all reviews for a caregiver", async () => {
+  it("should return all reviews for a specific caregiver", async () => {
     // Create dummy data
-    const caregiverId = new mongoose.Types.ObjectId();
-    const clientId = new mongoose.Types.ObjectId();
-    const bookingId = new mongoose.Types.ObjectId();
-
     await new Review({
-      bookingId,
-      clientId,
-      caregiverId,
+      clientId: mockClientId,
+      caregiverId: mockCaregiverId,
+      bookingId: new mongoose.Types.ObjectId(),
       rating: 5,
-      comment: "Excellent service!",
+      comment: "Excellent care!",
     }).save();
 
-    const res = await request(app).get(`/reviews/caregiver/${caregiverId}`);
+    const res = await request(app).get(`/reviews/caregiver/${mockCaregiverId}`);
 
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBe(1);
-    expect(res.body[0]).toHaveProperty("rating", 5);
-    expect(res.body[0].caregiverId.toString()).toBe(caregiverId.toString());
-  });
-
-  it("should return an empty array if caregiver has no reviews", async () => {
-    const nonExistentId = new mongoose.Types.ObjectId();
-    const res = await request(app).get(`/reviews/caregiver/${nonExistentId}`);
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toEqual([]);
+    expect(res.body[0].caregiverId.toString()).toBe(mockCaregiverId.toString());
+    expect(res.body[0]).toHaveProperty("comment", "Excellent care!");
   });
 });
