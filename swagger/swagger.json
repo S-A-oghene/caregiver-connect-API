@@ -178,6 +178,13 @@
           "phoneNumber": { "type": "string" },
           "address": { "type": "string" },
           "role": { "type": "string", "enum": ["client", "caregiver"], "description": "User role, can only be set at creation." }
+        },
+        "example": {
+          "firstName": "Jane",
+          "lastName": "Doe",
+          "phoneNumber": "555-123-4567",
+          "address": "123 Main St, Anytown, USA",
+          "role": "caregiver"
         }
       },
       "CaregiverProfile": {

@@ -12,7 +12,13 @@ const mockUserId = new mongoose.Types.ObjectId();
 
 // Mock the auth middleware for protected routes if needed
 jest.mock("../middleware/auth", () => (req, res, next) => {
-  req.user = { id: mockUserId.toString(), _id: mockUserId, role: "caregiver" };
+  // Make the mock user object more complete to match a real user
+  req.user = {
+    id: mockUserId.toString(),
+    _id: mockUserId,
+    role: "caregiver",
+    email: "caregiver@test.com",
+  };
   next();
 });
 
@@ -44,7 +50,9 @@ describe("Profile GET Endpoints", () => {
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBe(1);
+    // Check populated user data from the controller logic
     expect(res.body[0]).toHaveProperty("bio", "Experienced caregiver.");
+    expect(res.body[0].userId).toHaveProperty("email", "caregiver@test.com");
   });
 
   it("GET /profiles/:id - should return a single caregiver profile by user ID", async () => {
